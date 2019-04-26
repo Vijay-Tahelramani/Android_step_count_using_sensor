@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float mAccel;
     float current_steps = 0.0f;
     boolean shake = false;
+    int system_steps = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onPause() {
         super.onPause();
-        //running = false;
+        running = false;
         sm.unregisterListener(this,AccelSensor);
     }
 
@@ -72,13 +73,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if (mAccel > 12) {
                 Toast toast = Toast.makeText(getApplicationContext(), "Device has shaken.", Toast.LENGTH_LONG);
                 toast.show();
-                current_steps = current_steps + Float.parseFloat(mySteps.getText().toString());
+                mySteps.setText("0");
+                shake = true;
             }
         }
         else if(event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-
+            if(shake){
+                shake = false;
+                system_steps = (int)event.values[0];
+            }
             if (running) {
-                mySteps.setText(String.valueOf(event.values[0]-current_steps));
+                mySteps.setText(String.valueOf((int)event.values[0]-system_steps));
             }
         }
 
